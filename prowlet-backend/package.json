@@ -23,7 +23,6 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@coral-xyz/anchor": "^0.32.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/chai": "^4.3.20",
     "@types/cors": "^2.8.17",
@@ -38,8 +37,6 @@
     "@types/supertest": "^6.0.2",
     "@types/yazl": "^3.3.1",
     "chai": "^4.5.0",
-    "js-sha3": "^0.9.3",
-    "merkletreejs": "^0.6.0",
     "mocha": "^10.8.2",
     "supertest": "^7.0.0",
     "ts-mocha": "^10.0.0",

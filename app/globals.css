@@ -186,6 +186,14 @@ a:focus-visible {
   min-height: 620px;
 }
 
+.landing-hero .hero-copy {
+  animation: content-arrive 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.landing-hero .hero-art {
+  animation: content-arrive 720ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
+}
+
 .hero-copy {
   position: relative;
   z-index: 1;
@@ -813,6 +821,27 @@ a:focus-visible {
   html {
     scroll-behavior: auto;
   }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes content-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .route-main {
@@ -1136,6 +1165,7 @@ input[type="file"]::file-selector-button {
 
 .auth-panel {
   border-top: 1px solid var(--dp-color-accent);
+  animation: content-arrive 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .auth-panel .field-stack {

@@ -106,6 +106,11 @@ if [[ "$FIRST_INSTALL" -eq 1 ]]; then
   chmod 600 "$BACKEND_DIR/.env"
 fi
 
+runuser -u ec2-user -- bash -lc "cd '$APP_DIR' && npm prune --omit=dev"
+runuser -u ec2-user -- bash -lc "cd '$BACKEND_DIR' && npm prune --omit=dev"
+
+install -o root -g root -m 0600 "$BACKEND_DIR/.env" /etc/prowlet/backend.env
+
 cat > /etc/systemd/system/prowlet-api.service <<EOF
 [Unit]
 Description=Prowlet API
@@ -117,7 +122,7 @@ Type=simple
 User=ec2-user
 Group=ec2-user
 WorkingDirectory=$BACKEND_DIR
-EnvironmentFile=$BACKEND_DIR/.env
+EnvironmentFile=/etc/prowlet/backend.env
 ExecStart=/usr/bin/node dist/src/server.js
 Restart=on-failure
 RestartSec=5
@@ -167,30 +172,30 @@ server {
     location /api/ {
         proxy_pass http://127.0.0.1:4000/api/;
         proxy_http_version 1.1;
-        proxy_set_header Host \\$host;
-        proxy_set_header X-Real-IP \\$remote_addr;
-        proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \\$scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     location = /health {
         proxy_pass http://127.0.0.1:4000/health;
-        proxy_set_header Host \\$host;
+        proxy_set_header Host \$host;
     }
 
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
-        proxy_set_header Host \\$host;
-        proxy_set_header X-Real-IP \\$remote_addr;
-        proxy_set_header X-Forwarded-For \\$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \\$scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 }
 EOF
 
 cat > /etc/sudoers.d/prowlet-deploy <<'EOF'
-ec2-user ALL=(root) NOPASSWD: /usr/bin/systemctl restart prowlet-api.service, /usr/bin/systemctl restart prowlet-web.service, /usr/bin/systemctl is-active prowlet-api.service, /usr/bin/systemctl is-active prowlet-web.service
+ec2-user ALL=(root) NOPASSWD: /usr/bin/install -o root -g root -m 0600 /home/ec2-user/prowlet/prowlet-backend/.env /etc/prowlet/backend.env, /usr/bin/systemctl restart prowlet-api.service, /usr/bin/systemctl restart prowlet-web.service, /usr/bin/systemctl is-active prowlet-api.service, /usr/bin/systemctl is-active prowlet-web.service
 EOF
 chmod 440 /etc/sudoers.d/prowlet-deploy
 visudo -cf /etc/sudoers.d/prowlet-deploy

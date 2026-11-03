@@ -11,12 +11,15 @@ git pull --ff-only origin main
 
 npm ci
 npm run build
+npm prune --omit=dev
 
 cd "$BACKEND_DIR"
 npm ci
 npm run api:build
 npm run db:migrate
+npm prune --omit=dev
 
+sudo -n /usr/bin/install -o root -g root -m 0600 "$BACKEND_DIR/.env" /etc/prowlet/backend.env
 sudo -n /usr/bin/systemctl restart prowlet-api.service prowlet-web.service
 sudo -n /usr/bin/systemctl is-active --quiet prowlet-api.service
 sudo -n /usr/bin/systemctl is-active --quiet prowlet-web.service

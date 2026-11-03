@@ -31,6 +31,7 @@
 *.key
 *.p12
 *.pfx
+cred.md
 id.json
 *-wallet.json
 *-keypair.json
