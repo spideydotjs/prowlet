@@ -48,18 +48,26 @@ function CertificateDetail() {
     <div className="dashboard-page">
       <div className="dashboard-heading">
         <div>
-          <Link className="dashboard-back" href="/dashboard/certificates">← Certificates</Link>
+          <Link className="dashboard-back" href="/dashboard/certificates">{"<"} Certificates</Link>
           <h1 className="dashboard-title">{certificate.recipient}</h1>
           <p className="route-intro">{certificate.id} / {certificate.course}</p>
         </div>
         {certificate.status === "issued" && <button className="action action-secondary" type="button" onClick={revoke}>Revoke certificate</button>}
       </div>
-      <div className="detail-grid">
-        <div className="detail-preview"><CertificatePreview recipient={certificate.recipient} course={certificate.course} issuer={certificate.issuer} /></div>
+      <div className="certificate-showcase">
+        <div className="detail-preview">
+          <div className="preview-caption"><span>Credential preview</span><span>{certificate.id}</span></div>
+          <CertificatePreview recipient={certificate.recipient} course={certificate.course} issuer={certificate.issuer} />
+        </div>
         <section className="dashboard-panel">
-          <p className="eyebrow">Certificate details</p>
+          <div className="panel-heading-row">
+            <div>
+              <p className="eyebrow">Certificate record</p>
+              <h2 className="route-subtitle">A credential with a public proof.</h2>
+            </div>
+            <span className={`status-badge status-${certificate.status}`}>{certificate.status}</span>
+          </div>
           <dl className="metadata-grid">
-            <div><dt>Status</dt><dd><span className={`status-badge status-${certificate.status}`}>{certificate.status}</span></dd></div>
             <div><dt>Issue date</dt><dd>{certificate.issueDate}</dd></div>
             <div><dt>Issuer</dt><dd>{certificate.issuer}</dd></div>
             <div><dt>Network</dt><dd>{certificate.network}</dd></div>
@@ -74,7 +82,13 @@ function CertificateDetail() {
         </section>
       </div>
       <section className="dashboard-panel timeline-panel">
-        <h2>Activity</h2>
+        <div className="panel-heading-row">
+          <div>
+            <p className="eyebrow">Record history</p>
+            <h2>Activity</h2>
+          </div>
+          <span className="timeline-marker" aria-hidden="true">●</span>
+        </div>
         <ol className="timeline">
           <li><span>Certificate record created</span><time>{certificate.issueDate}</time></li>
           <li><span>Batch anchored on {certificate.network}</span><time>{certificate.issueDate}</time></li>

@@ -126,17 +126,28 @@ function VerificationResult({ result }: { result: Verification }) {
   const certificate = result.certificate;
   return (
     <article className={`route-panel verification-card ${result.status === "revoked" ? "state-warning" : "state-success"}`}>
-      <p className="eyebrow">{result.status === "revoked" ? "Revoked certificate" : result.status === "pending" ? "Pending certificate" : "Verified certificate"}</p>
-      <h2 className="route-subtitle">
-        {result.status === "revoked"
-          ? "This certificate is no longer valid."
-          : result.status === "pending"
-            ? "This certificate is awaiting issuer confirmation."
-            : "This certificate is valid."}
-      </h2>
+      <div className="verification-header">
+        <div>
+          <p className="eyebrow">{result.status === "revoked" ? "Revoked certificate" : result.status === "pending" ? "Pending certificate" : "Verified certificate"}</p>
+          <h2 className="route-subtitle">
+            {result.status === "revoked"
+              ? "This certificate is no longer valid."
+              : result.status === "pending"
+                ? "This certificate is awaiting issuer confirmation."
+                : "This certificate is valid."}
+          </h2>
+        </div>
+        <span className="verification-signal" aria-label={result.status} />
+      </div>
+      <div className="verification-identity">
+        <span className="verification-initial" aria-hidden="true">{certificate.recipient.slice(0, 1).toUpperCase()}</span>
+        <div>
+          <span className="certificate-meta-label">Credential holder</span>
+          <strong>{certificate.recipient}</strong>
+          <span>{certificate.course}</span>
+        </div>
+      </div>
       <dl className="metadata-grid">
-        <div><dt>Recipient</dt><dd>{certificate.recipient}</dd></div>
-        <div><dt>Course or event</dt><dd>{certificate.course}</dd></div>
         <div>
           <dt>Issuer</dt>
           <dd>{certificate.issuer} {certificate.issuerVerified && <span className="verified-badge">Verified issuer</span>}</dd>

@@ -356,6 +356,30 @@ a:focus-visible {
   gap: 16px;
 }
 
+.certificate-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.certificate-brand > span:last-child {
+  display: grid;
+  gap: 2px;
+}
+
+.certificate-brand strong {
+  color: var(--dp-color-ink);
+  font-family: var(--dp-typography-display);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+
+.certificate-brand small {
+  color: var(--dp-color-ink-muted);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
 .certificate-monogram,
 .certificate-stamp {
   width: 34px;
@@ -380,6 +404,31 @@ a:focus-visible {
   z-index: 1;
   padding: 28px 0;
   text-align: center;
+}
+
+.certificate-signal {
+  position: absolute;
+  z-index: 1;
+  top: 84px;
+  right: 34px;
+  display: grid;
+  grid-template-columns: repeat(4, 5px);
+  gap: 4px;
+  opacity: 0.75;
+}
+
+.certificate-signal i {
+  width: 5px;
+  height: 5px;
+  background: var(--dp-color-accent);
+}
+
+.certificate-signal i:nth-child(2n) {
+  background: var(--dp-color-registration);
+}
+
+.certificate-signal i:nth-child(3n) {
+  opacity: 0.35;
 }
 
 .certificate-kicker,
@@ -409,6 +458,17 @@ a:focus-visible {
   gap: 5px;
 }
 
+.certificate-signature {
+  min-width: 90px;
+}
+
+.certificate-signature-line {
+  width: 90px;
+  height: 1px;
+  display: block;
+  background: var(--dp-color-control-line);
+}
+
 .certificate-meta-label {
   color: var(--dp-color-ink-muted);
   font-size: 9px;
@@ -417,6 +477,16 @@ a:focus-visible {
 .certificate-issuer {
   color: var(--dp-color-ink-body);
   font-size: var(--dp-typography-metadata);
+}
+
+.certificate-code {
+  position: absolute;
+  right: 28px;
+  bottom: 10px;
+  z-index: 1;
+  color: var(--dp-color-ink-muted);
+  font-size: 8px;
+  letter-spacing: 0.12em;
 }
 
 .landing-section {
@@ -1081,6 +1151,70 @@ input[type="file"]::file-selector-button {
   border-top: 2px solid var(--dp-color-accent);
 }
 
+.verification-header,
+.panel-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.verification-signal {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  margin-top: 8px;
+  border: 2px solid var(--dp-color-accent);
+  background: var(--dp-color-accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--dp-color-accent) 15%, transparent);
+}
+
+.state-warning .verification-signal,
+.state-error .verification-signal {
+  border-color: var(--dp-color-interference);
+  background: var(--dp-color-interference);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--dp-color-interference) 15%, transparent);
+}
+
+.verification-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  padding: 16px;
+  border: 1px solid var(--dp-color-line);
+  background: color-mix(in srgb, var(--dp-color-ground) 60%, transparent);
+}
+
+.verification-initial {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--dp-color-accent);
+  color: var(--dp-color-accent);
+  font-family: var(--dp-typography-display);
+  font-size: 24px;
+}
+
+.verification-identity div {
+  display: grid;
+  gap: 4px;
+}
+
+.verification-identity strong {
+  color: var(--dp-color-ink);
+  font-family: var(--dp-typography-display);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.verification-identity div > span:last-child {
+  color: var(--dp-color-ink-muted);
+  font-size: var(--dp-typography-metadata);
+}
+
 .state-warning {
   border-top-color: var(--dp-color-interference);
 }
@@ -1555,12 +1689,30 @@ button:disabled {
   gap: 18px;
 }
 
+.certificate-showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  align-items: stretch;
+  gap: 18px;
+}
+
 .detail-preview {
   display: grid;
   justify-items: center;
   padding: 22px;
   border: 1px solid var(--dp-color-line);
   background: var(--dp-color-plate);
+}
+
+.preview-caption {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  color: var(--dp-color-ink-muted);
+  font-size: var(--dp-typography-metadata);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .detail-preview .certificate-preview {
@@ -1573,6 +1725,11 @@ button:disabled {
 
 .timeline-panel {
   margin-top: 18px;
+}
+
+.timeline-marker {
+  color: var(--dp-color-accent);
+  font-size: 12px;
 }
 
 .timeline {
@@ -1874,7 +2031,8 @@ button:disabled {
 @media (max-width: 900px) {
   .verify-layout,
   .overview-grid,
-  .detail-grid {
+  .detail-grid,
+  .certificate-showcase {
     grid-template-columns: minmax(0, 1fr);
   }
 
