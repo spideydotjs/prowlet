@@ -6,7 +6,7 @@ type CertificatePreviewProps = {
 
 export default function CertificatePreview({
   course = "Foundations of Data Ethics",
-  recipient = "Mara Ellison",
+  recipient = "Harshit Rozera",
   issuer = "Northline Learning Lab",
 }: CertificatePreviewProps) {
   return (
