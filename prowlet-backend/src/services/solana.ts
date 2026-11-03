@@ -142,7 +142,9 @@ class SolanaRegistry {
     const revocationInfo = await program.provider.connection.getAccountInfo(revocation, "confirmed");
     const result = await program.methods
       .verify([...root], [...leaf], proof.map((item) => [...item]))
-      .accountsPartial({ batch, ...(revocationInfo ? { revocation } : {}) })
+      // Anchor's untyped Program declaration omits nullable optional accounts.
+      // @ts-expect-error The on-chain verify instruction requires the optional key.
+      .accountsPartial({ batch, revocation: revocationInfo ? revocation : null })
       .view();
     return result as VerifyResponse;
   }
