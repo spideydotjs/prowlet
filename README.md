@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prowlet
 
-## Getting Started
+Prowlet is a frontend-only certificate issuing and verification preview built with Next.js App Router, TypeScript, and Tailwind CSS v4. Certificate, organization, and issuer-session data is local mock data. Blockchain access, PDF generation, camera scanning, and email delivery are not connected.
 
-First, run the development server:
+## Routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Landing page |
+| `/verify` | Verify by certificate ID, select a PDF, or view the QR scan placeholder |
+| `/verify/[id]` | Open verification for a certificate ID |
+| `/login` | Mock issuer sign in |
+| `/register` | Mock organization registration and pending-verification state |
+| `/dashboard` | Issuer overview and issuance activity |
+| `/dashboard/issue` | Five-step mock certificate batch wizard |
+| `/dashboard/certificates` | Searchable and filterable certificate list with copy and revoke actions |
+| `/dashboard/certificates/[id]` | Certificate preview, proof metadata, and activity |
+| `/dashboard/templates` | Sample certificate designs |
+| `/dashboard/settings` | Mock organization settings |
+
+Issuer routes use a browser-local mock session and redirect to `/login` when no session exists. Sign in with `credentials@northline.example` and any password of at least six characters.
+
+## Mock data and services
+
+- `lib/mock/data.ts` seeds two organizations, five batches, and 32 certificates across issued, pending, and revoked states.
+- `lib/api/index.ts` is the data-access boundary. Its async functions simulate latency and return or mutate mock data.
+- `components/` contains reusable public navigation, certificate preview, forms, the dashboard shell, and the issue wizard.
+
+## Mock-to-real API mapping
+
+| Mock function | Future integration |
+| --- | --- |
+| `verifyCertificate(id)` | Certificate lookup API, integrity proof verification, and chain read |
+| `getCertificates()` / `getCertificate(id)` | Authenticated issuer certificate list and detail endpoints |
+| `revokeCertificate(id, reason)` | Revocation service plus on-chain revocation transaction |
+| `issueBatch(input)` | PDF generation, batch/Merkle computation, transaction submission, and batch persistence |
+| `signIn(email, password)` | Organization authentication and session/token creation |
+| `registerOrganization(input)` | Organization registration and verification workflow |
+| `getDashboardSummary()` | Issuer analytics and activity endpoints |
+
+Replace the implementations in `lib/api/index.ts` with service calls while retaining their typed interfaces. The issue wizard's CSV parser, PDF selection, share/download placeholders, and email actions are frontend demonstrations only.
+
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

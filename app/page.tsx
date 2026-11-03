@@ -1,69 +1,170 @@
-import Image from "next/image";
+import Link from "next/link";
+
+import CertificatePreview from "@/components/certificate-preview";
+import SiteFooter from "@/components/site-footer";
+import SiteHeader from "@/components/site-header";
+
+const steps = [
+  {
+    title: "Issue",
+    description:
+      "Create a certificate once, then prepare a whole recipient batch together.",
+  },
+  {
+    title: "Anchor on-chain",
+    description:
+      "Prowlet is designed to anchor a verifiable record for each issued batch.",
+  },
+  {
+    title: "Verify instantly",
+    description:
+      "Recipients can check a certificate with its ID or a direct verification link.",
+  },
+];
+
+const features = [
+  {
+    title: "Tamper-evident records",
+    description:
+      "Give every certificate a verifiable record that makes later changes detectable.",
+    marker: "01",
+  },
+  {
+    title: "Bulk issuing",
+    description:
+      "Prepare certificates for a full class, event, or cohort in one workflow.",
+    marker: "02",
+  },
+  {
+    title: "QR-ready verification",
+    description:
+      "Let recipients open a certificate check from a scannable link.",
+    marker: "03",
+  },
+  {
+    title: "No wallet needed",
+    description:
+      "Keep certificate checks simple. Recipients do not need a crypto wallet.",
+    marker: "04",
+  },
+  {
+    title: "Clear revocation",
+    description:
+      "Mark a certificate revoked and make its current status clear to anyone checking it.",
+    marker: "05",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="site-frame prowlet-site">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
+      <SiteHeader />
+
+      <main id="main" className="main-content landing-main">
+        <section className="hero landing-hero" aria-labelledby="hero-title">
+          <div className="hero-copy">
+            <p className="eyebrow">Certificates, built for proof</p>
+            <h1 id="hero-title">
+              Credentials that
+              <br />
+              <span>prove themselves.</span>
+            </h1>
+            <p className="hero-description">
+              Issue tamper-evident certificates and give every recipient a
+              straightforward way to verify them.
+            </p>
+            <div className="actions">
+              <Link className="action action-primary" href="/verify">
+                Verify a Certificate <span aria-hidden="true">↗</span>
+              </Link>
+              <Link className="action action-secondary" href="/register">
+                Issue Certificates <span aria-hidden="true">↗</span>
+              </Link>
+            </div>
+            <p className="preview-notice">
+              Frontend preview. Blockchain and verification services are not
+              connected yet.
+            </p>
+          </div>
+
+          <div className="hero-art">
+            <span className="preview-label">Certificate preview</span>
+            <CertificatePreview />
+            <span className="hero-art-index" aria-hidden="true">
+              PROWLET / CREDENTIALS
+            </span>
+          </div>
+        </section>
+
+        <section
+          id="how-it-works"
+          className="landing-section process-section"
+          aria-labelledby="process-title"
+        >
+          <div className="section-heading">
+            <h2 id="process-title">From issue to proof.</h2>
+            <p>
+              A clear path from a recipient list to a certificate anyone can
+              check.
+            </p>
+          </div>
+          <ol className="process-list">
+            {steps.map((step, index) => (
+              <li className="process-step" key={step.title}>
+                <span className="process-number" aria-hidden="true">
+                  0{index + 1}
+                </span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section
+          id="features"
+          className="landing-section features-section"
+          aria-labelledby="features-title"
+        >
+          <div className="section-heading">
+            <h2 id="features-title">Everything a credential needs.</h2>
+            <p>
+              Tools for issuers, with a verification experience recipients can
+              use without extra setup.
+            </p>
+          </div>
+          <ul className="feature-grid">
+            {features.map((feature) => (
+              <li className="feature-item" key={feature.title}>
+                <span className="feature-marker" aria-hidden="true">
+                  {feature.marker}
+                </span>
+                <div>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.description}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="closing-section" aria-labelledby="closing-title">
+          <div>
+            <h2 id="closing-title">Make every achievement easy to trust.</h2>
+            <p>Start with a certificate. Give it a way to be checked.</p>
+          </div>
+          <Link className="action action-primary" href="/register">
+            Issue Certificates <span aria-hidden="true">↗</span>
+          </Link>
+        </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }
