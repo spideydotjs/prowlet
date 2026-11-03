@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_PROWLET_API_URL: http://localhost:4000/api
+
+  backend:
+    name: Backend checks
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: prowlet
+          POSTGRES_USER: prowlet
+          POSTGRES_PASSWORD: prowlet-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U prowlet -d prowlet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: prowlet-backend
+    env:
+      NODE_ENV: test
+      PORT: 4000
+      FRONTEND_URL: http://localhost:3000
+      FRONTEND_PUBLIC_URL: http://localhost:3000
+      JWT_SECRET: ci-only-secret-not-for-deployment
+      DATABASE_URL: postgresql://prowlet:prowlet-ci-only@127.0.0.1:5432/prowlet
+      DATABASE_SSL: "false"
+      BLOCKCHAIN_MODE: mock
+      ADMIN_EMAIL: admin@prowlet.test
+      ADMIN_PASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: prowlet-backend/package-lock.json
+      - run: npm ci
+      - run: npm run api:build
+      - run: npm test
+
+  deploy:
+    name: Deploy through AWS Systems Manager
+    needs: [frontend, backend]
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && vars.DEPLOY_AWS_ROLE_ARN != '' && vars.EC2_INSTANCE_ID != '')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: prowlet-ec2-production
+      cancel-in-progress: false
+    steps:
+      - name: Require deployment configuration
+        env:
+          AWS_ROLE_ARN: ${{ vars.DEPLOY_AWS_ROLE_ARN }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          EC2_INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "::error::Deploy only from the main branch."
+            exit 1
+          fi
+          if [[ -z "$AWS_ROLE_ARN" || -z "$AWS_REGION" || -z "$EC2_INSTANCE_ID" ]]; then
+            echo "::error::Set DEPLOY_AWS_ROLE_ARN, AWS_REGION, and EC2_INSTANCE_ID repository variables."
+            exit 1
+          fi
+
+      - name: Configure AWS credentials with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.DEPLOY_AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: ProwletGitHubDeploy
+
+      - name: Run deployment on EC2
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          EC2_INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+        run: |
+          set -euo pipefail
+          command_id="$(aws ssm send-command \
+            --region "$AWS_REGION" \
+            --instance-ids "$EC2_INSTANCE_ID" \
+            --document-name AWS-RunShellScript \
+            --timeout-seconds 1800 \
+            --parameters '{"commands":["/usr/local/sbin/prowlet-deploy"]}' \
+            --query 'Command.CommandId' \
+            --output text)"
+          echo "SSM command submitted: $command_id"
+
+          for attempt in $(seq 1 180); do
+            if ! invocation="$(aws ssm get-command-invocation \
+              --region "$AWS_REGION" \
+              --command-id "$command_id" \
+              --instance-id "$EC2_INSTANCE_ID" \
+              --output json 2>&1)"; then
+              if [[ "$invocation" == *InvocationDoesNotExist* ]]; then
+                sleep 10
+                continue
+              fi
+              echo "$invocation" >&2
+              exit 1
+            fi
+            status="$(jq -r '.Status' <<< "$invocation")"
+            case "$status" in
+              Success)
+                jq -r '.StandardOutputContent' <<< "$invocation"
+                exit 0
+                ;;
+              Failed|Cancelled|TimedOut)
+                jq '{Status,Error: .StandardErrorContent,Output: .StandardOutputContent}' <<< "$invocation"
+                exit 1
+                ;;
+            esac
+            sleep 10
+          done
+          echo "::error::Timed out waiting for the EC2 deployment command."
+          exit 1

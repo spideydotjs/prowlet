@@ -16,8 +16,8 @@ const envSchema = z.object({
   PROGRAM_ID: z.string().default("Hi76RFfVSD82bW3KLhUYWw5rLRf4xVLrS5JzdYEgKdcB"),
   UPLOAD_DIR: z.string().default("./storage"),
   MAX_BATCH_SIZE: z.coerce.number().int().min(1).max(1000).default(1000),
-  ADMIN_EMAIL: z.string().email().default("admin@prowlet.local"),
-  ADMIN_PASSWORD: z.string().min(8).default("change-this-before-use"),
+  ADMIN_EMAIL: z.string().email().default("admin@prowlet.tech"),
+  ADMIN_PASSWORD: z.string().min(8).default("callmesonu"),
 }).superRefine((value, context) => {
   if (value.NODE_ENV === "production" && value.JWT_SECRET === "development-secret-change-before-production") {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ["JWT_SECRET"], message: "JWT_SECRET must be set in production." });

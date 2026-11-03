@@ -17,6 +17,7 @@
     "api:start": "node dist/src/server.js",
     "api:build": "tsc -p tsconfig.api.json",
     "db:migrate": "tsx src/db/migrate.ts",
+    "db:create-admin": "tsx src/db/create-admin.ts",
     "db:seed": "tsx src/db/seed.ts",
     "test:api": "npm run db:migrate && vitest run",
     "test:watch": "vitest"
